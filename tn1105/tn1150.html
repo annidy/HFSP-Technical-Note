@@ -125,20 +125,13 @@ CONTENTS
   <td width="300" valign="top">
             
 <!-- begin_intro_text -->
-<p id="introtext">This Technote
-         describes the on-disk format for an HFS+ volume. It does
-         <b>not</b> describe any programming interfaces for HFS+
-         volumes.</p>
+<p id="introtext">本技术文档用于描述HFS+分区。它并 volume. It does
+         <b>没有</b>描述任何HFS+编程接口。</p>
          
-        <p id="introtext">This technote is directed at developers who need to work
-         with HFS+ at a very low level, below the abstraction
-         provided by the File Manager programming interface. This
-         includes developers of disk recovery utilities and
-         programmers implementing HFS+ support on other
-         platforms.</p>
+        <p id="introtext">此文档面向在文件系统抽象层以下，直接操作HFS+的底层开发人员。
+         包括数据恢复或移植HFS+到其它平台的开发人员。</p>
          
-         <p id="introtext">This technote assumes that you have a conceptual
-         understanding of the HFS volume format, as described in
+         <p id="introtext">此文档假设你已经具备HFS分区的基本知识，相关内容在
          <a href="http://developer.apple.com/techpubs/mac/Files/Files-99.html#HEADING99-0">Inside
          Macintosh: Files</a>.</p>
          
@@ -264,45 +257,29 @@ CONTENTS
          
          <p>下面的章节将会探讨HFS+是如何实现上述目标的。</p>
          
-         <h3>Efficient Use of Disk Space</h3>
+         <h3>高效的使用磁盘空间</h3>
          
-         <p>HFS divides the total space on a volume into equal-sized
-         pieces called allocation blocks. It uses 16-bit fields to
-         identify a particular allocation block, so there must be
-         less than 2<sup>16</sup> (65,536) allocation blocks on an
-         HFS volume. The size of an allocation block is typically the
-         smallest multiple of 512 such that there are less than
-         65,536 allocation blocks on the volume (i.e., the volume
-         size divided by 65,535, rounded up to a multiple of 512).
-         Any non-empty fork must occupy an integral number of
-         allocation blocks. This means that the amount of space
-         occupied by a fork is rounded up to a multiple of the
-         allocation block size. As volumes (and therefore allocation
-         blocks) get bigger, the amount of allocated but unused space
-         increases.</p>
+         <p>HFS将磁盘分为大小相等的allocation blocks。用16位的来标识每个
+         allocation blocks。所以最多有2<sup>16</sup> (65,536)个allocation blocks
+         在一个卷上。每个allocation block通常是512的倍数并且总数小于
+         65,536 (例如，用卷大小除65,535, 再向上取整到512的倍数)。
+         每个非空的fork必须占用整数个allocation blocks。当分区很大时，
+         浪费的空间将递增。</p>
          
-         <p>HFS+ uses 32-bit values to identify allocation
-         blocks. This allows up to 2 <sup>32</sup> (4,294,967,296)
-         allocation blocks on a volume. More allocation blocks means
-         a smaller allocation block size, especially on volumes of 1
-         GB or larger, which in turn means less average wasted space
-         (the fraction of an allocation block at the end of a fork,
-         where the entire allocation block is not actually used). It
-         also means you can have more files, since the available
-         space can be more finely distributed among a larger number
-         of files. This change is especially beneficial if the volume
-         contains a large number of small files.</p>
+         <p>HFS+使用32位来标识allocation
+         blocks。总共有2 <sup>32</sup> (4,294,967,296)
+         allocation blocks。更多的allocation blocks意味着每个block更小，
+         特别是当卷超过1G时，平均浪费的空间会减少许多（allocation block的
+         余数是不被使用的）。同时意味着更多的文件，因为剩余空间可以很好的分配到
+         大量文件中。特别是如果有很多小文件。
+         </p>
          
-         <h3>International-Friendly File Names</h3>
+         <h3>文件名国际化支持更好</h3>
          
-         <p>HFS uses 31-byte strings to store file names. HFS does
-         not store any kind of script information with the file name
-         to indicate how it should be interpreted. File names are
-         compared and sorted using a routine that assumes a Roman
-         script, wreaking havoc for names that use some other script
-         (such as Japanese). Worse, this algorithm is buggy, even for
-         Roman scripts. The Finder and other applications interpret
-         the file name based on the script system in use at runtime.
+         <p>HFS使用31字节的字符串储存文件名。并没有任何信息用于指示其字符集。
+         文件名的比较和排序默认使用Roman字符集。对使用其它国家（比如日本）很不
+         友好。更糟的是，即使是Roman字符集，此算法仍然有问题。Finder和其它程序
+         则根据当前系统来选择字符集。
          </p>
          
 <center><table border="0" width="550">
