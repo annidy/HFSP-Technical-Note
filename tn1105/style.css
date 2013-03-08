@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+			<meta http-equiv="refresh" content="5; url=http://developer.apple.com/library/mac/index.html">
+	 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="pics-label" content='(pics-1.1 "http://www.icra.org/ratingsv02.html" l gen true for "http://www.apple.com" r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true for "http://www.apple.com" r (n 0 s 0 v 0 l 0))'>
+<meta name="Author" content="Apple Inc.">
+<meta name="viewport" content="width=1024">
+<link rel="shortcut icon" href="https://devimages.apple.com.edgekey.net/favicon.ico">
+<link rel="icon" href="https://devimages.apple.com.edgekey.net/favicon.ico">
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/base.css" type="text/css">
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/adc.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>	<title>Page Not Found - Apple Developer</title> 
+</head>
+<body class="pnf mac devcenter">
+	<div id="globalheader">
+	<h1><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder">Search Developer</span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch">
+			</label>
+		</div></form>
+	</div>
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+</div>
+	<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript"><!--
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+//--></script>
+
+<script type="text/javascript" src="https://devimages.apple.com.edgekey.net/assets/metrics/js/s_code_h.js"></script>
+
+<script type="text/javascript"><!--
+s.pageName=document.title;
+s.server=""
+s.channel="www.us.developer"
+s.pageType=""
+s.prop1=""
+s.prop2=""
+s.prop3=""
+s.prop4=document.location;
+
+/* E-commerce Variables */
+s.campaign=""
+s.state=""
+s.zip=""
+s.events=""
+s.products=""
+s.purchaseID=""
+s.eVar1=""
+s.eVar2=""
+s.eVar3=""
+s.eVar4=""
+s.eVar5=""
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)//--></script>
+<!-- End SiteCatalyst code version: H.8. -->
+
+	<style type="text/css">
+	body.pnf #content p { margin-bottom: 2em; font-size: 1.3em; color: #777777; }
+	body.pnf #content h4 {margin-bottom: 1em;}
+	#content { padding: 3.5em 40px 3em !important; }
+	</style>
+	<div id="content" class="box grid3col">
+			<div class="cap boxtop"></div>
+							
+					<h1><img src="http://devimages.apple.com/pagenotfound/images/pnf_redirect_header.png" alt="Your request is being redirected"></h1>
+								<p>You may have used an outdated link or typed the address (URL) incorrectly. If you came to this page via a bookmark, please update it accordingly.<br><br>The page you requested: <a href="/library/mac/style.css">http://developer.apple.com/library/mac/style.css</a><br>The page to which you will be redirected: <a href="/library/mac/index.html">http://developer.apple.com/library/mac/index.html</a></p>		
+			<div class="cap boxbottom"></div>
+	</div><!-- /content -->
+
+	<div id="globalfooter">
+		<div id="breadory">
+			<ol id="breadcrumbs">
+				<li class="home"><a href="/">Developer</a></li>
+			</ol>
+				<div id="directorynav" class="ipoditunes">
+		<div id="dn-cola" class="column first">
+			<h3><a href="/technologies/">Technologies</a></h3>
+			<ul>
+				<li><a href="/technologies/tools/">Developer Tools</a></li>
+				<li><a href="/technologies/ios/">iOS</a></li>
+				<li><a href="/technologies/mac/">Mac OS X</a></li>
+				<li><a href="/technologies/safari/">Safari</a></li>
+			</ul>
+		</div><!--/dn-cola-->
+		<div id="dn-colb" class="column">
+			<h3><a href="/resources/">Resources</a></h3>
+			<ul>
+				<li><a href="/devcenter/ios/index.action">iOS Dev Center</a></li>
+				<li><a href="/devcenter/mac/index.action">Mac Dev Center</a></li>
+				<li><a href="/devcenter/safari/index.action">Safari Dev Center</a></li>
+				<li><a href="/appstore/">App Store Resource Center</a></li>
+				<li><a href="/devforums/">Developer Forums</a></li>
+				<li><a href="/videos/">Development Videos</a></li>				
+			</ul>
+		</div><!--/dn-colb-->
+		<div id="dn-colc" class="column">
+			<h3>&nbsp;</h3>
+			<ul>
+				<li><a href="/iad/">iAd</a></li>
+				<li><a href="/appleapplications/">Apple Applications</a></li>
+				<li><a href="/hardwaredrivers/">Hardware &amp; Drivers</a></li>
+				<li><a href="/softwarelicensing/">Licensing &amp; Trademarks</a></li>
+				<li><a href="/resources/cases/">iPod, iPhone &amp; iPad Cases</a></li>
+			</ul>
+		</div><!--/dn-colc-->
+		<div id="dn-cold" class="column">
+			<h3><a href="/programs/">Programs</a></h3>
+			<ul>
+				<li><a href="/programs/ios/">iOS Developer Program</a></li>
+				<li><a href="/programs/ios/enterprise/">iOS Enterprise Program</a></li>
+				<li><a href="/programs/ios/university/">iOS University Program</a></li>
+				<li><a href="/programs/mac/">Mac Developer Program</a></li>
+				<li><a href="/programs/safari/">Safari Developer Program</a></li>				
+				<li><a href="/programs/mfi/">MFi Program</a></li>
+				<li><a href="/programs/register/">Register as an Apple Developer</a></li>
+			</ul>
+		</div><!--/dn-cold-->
+		<div id="dn-cole" class="column last">
+			<h3><a href="/support/">Support</a></h3>
+			<ul>
+				<li><a href="/support/ios/">iOS Developer Program</a></li>
+				<li><a href="/support/mac/">Mac Developer Program</a></li>
+				<li><a href="/support/safari/">Safari Developer Program</a></li>				
+				<li><a href="/support/adc/">ADC Members</a></li>
+				<li><a href="/bugreporter/">Bug Reporting</a></li>
+				<li><a href="/support/resources/itunes-connect.html">iTunes Connect Support</a></li>
+				<li><a href="/support/resources/technical-support.html">Technical Support</a></li>
+			</ul>
+		</div><!--/dn-cole-->
+		<div class="capbottom"></div>
+	</div><!--/directorynav-->
+		</div><!--/breadory-->
+		<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">Developer News</a></li>
+	<li><a href="http://lists.apple.com/mailman/listinfo">Mailing Lists</a></li>
+	<li><a href="/news/rss/news.rss">RSS Feeds</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2011 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>	</div><!--/globalfooter-->
+</body>
+</html>
