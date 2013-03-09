@@ -284,90 +284,49 @@ CONTENTS
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>
+<p><b>提示:</b><br>
                   
-                  The problem with using non-Roman scripts in an HFS
-                  file name is that HFS compares file names in a case-
-                  insensitive fashion. The case-insensitive
-                  comparison algorithm assume a MacRoman encoding.
-                  When presented with non-Roman text, this algorithm
-                  fails in strange ways. The upshot is that HFS
-                  decides that certain non-Roman file names are
-                  duplicates of other file names, even though they
-                  are not duplicates in the source encoding.</p>
+                  使用非Roman字符集问题是，HFS的文件名比较通常是大小写不敏感的。这个算法在非Roman会奇怪的失败，导致HFS认为它们名字相同，尽管事实上不相同。</p>
 </td></tr></tbody></table></center>
          
-         <p>HFS+ uses up to 255 Unicode characters to store file
-         names. Allowing up to 255 characters makes it easier to have
-         very descriptive names. Long names are especially useful
-         when the name is computer-generated (such as Java class
-         names).</p>
+         <p>HFS+ 使用255个Unicode字符储存文件名。长文件名对于计算机
+            生成的文件名非常适用（比如Java的类名）</p>
          
-         <p>The HFS catalog B-tree uses 512-byte nodes. An HFS+
-         file name can occupy up to 512 bytes (including the length
-         field). Since a B-tree index node must store at least two
-         keys (plus pointers and node descriptor), the HFS+
-         catalog must use a larger node size. The typical node size
-         for an HFS+ catalog B-tree is 4 KB.</p>
+         <p>HFS的catalog的B树中，每个节点是512字节。HFS+一个文件名就可能达到512字节（包括文件名长度）。
+            由于B树的索引节点至少有2个key（加上指针和节点描述），所以HFS+的catalog的节点大小更大，
+            通常是4k。</p>
          
-         <p>In the HFS catalog B-tree, the keys stored in an index
-         node always occupy a fixed amount of space, the maximum key
-         size. In HFS+, the keys in an index node may occupy a
-         variable amount of space determined by the actual size of
-         the key. This allows for less wasted space in index nodes
-         and creates, on typical disks, a substantially larger
-         branching factor in the tree (requiring fewer node accesses
-         to find any given record).</p>
+         <p>HFS的catalog的B树中，索引节点的key占用固定大小，即最大的key大小。
+         在HFS+，key的大小是可变的。这样浪费的空间就少了，同等地有更多分支在树中（
+         找到一个记录访问的节点更少）</p>
          
-         <h3>Future Support for Named Forks</h3>
+         <h3>未来支持Named Forks</h3>
          
-         <p>Files on an HFS volume have two forks: a data fork and a
-         resource fork, either of which may be empty (zero length).
-         Files and directories also contain a small amount of
-         additional information (known as catalog information or
-         metadata) such as the modification date or Finder info.</p>
+         <p>在HFS卷上的文件有2种forks: data fork 和 resource fork，
+         两者都可能是空。文件和目录还包含一些额外信息（catalog信息或元信息metadata），
+         比如修改日期或 Finder 信息。</p>
          
-         <p>Apple software teams and third-party developers often
-         need to store information associated with particular files
-         and directories. In some cases (for example, custom icons for
-         files), the data or resource fork is appropriate. But in
-         other cases (for example, custom icons for directories, or File
-         Sharing access privileges), using the data or resource fork
-         is not appropriate or not possible.</p>
+         <p>苹果软件团队或第三方开发人员常常需要针对特殊文件存储特别的信息。
+            某些情况（比如文件自定义图标），data或resource fork适用。
+            但另外（比如自定义目录图标，文件共享访问权限），使用data或resource fork就满足不了了。</p>
          
-         <p>A number of products have implemented special-purpose
-         solutions for storing their file- and directory-related
-         data. But because these are not managed by the file system,
-         they can become inconsistent with the file and directory
-         structure.</p>
+         <p>很多产品都有一些特殊方案以解决与特定文件或目录相关数据A保存。
+         由于它们并不由文件系统管理，所以可能与文件和目录结构不一致。</p>
          
-         <p>HFS+ has an attribute file, another B-tree, that can
-         be used to store additional information for a file or
-         directory. Since it is part of the volume format, this
-         information can be kept with the file or directory as is it
-         moved or renamed, and can be deleted when the file or
-         directory is deleted. The contents of the attribute file's
-         records have not been fully defined yet, but the goal is to
-         provide an arbitrary number of forks, identified by Unicode
-         names, for any file or directory.</p>
+         <p>HFS+有一个attribute文件，有单独的B树用于储存目录和文件。由于它是卷的一部分，
+            所以即使文件或目录移动或重命名后依然有效，删除后相关信息也被删除。
+            attribut文件的 records没有完全定义，但它的目的为任何文件和目录，提供任意数量的、以Unicode名字为key的forks。
+         </p>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>
+<p><b>提示:</b><br>
                   
-                  Because the attributes file has not been fully
-                  defined yet, current implementations are unable to
-                  delete named forks when a file or directory is
-                  deleted. Future implementations that properly
-                  delete named forks will need to check for these
-                  orphaned named forks and delete them when the
-                  volume is mounted. The
-                  <code>lastMountedVersion</code> field of the volume
-                  header can be used to detect when such a check
-                  needs to take place.</p>
+                  由于attributes文件还未完全定义，目前还不能在删除文件或目录时删除named fork。
+                  将来删除named forks可能会检查是否有孤立named forks，并在下次mounted时一并删除。卷头的<code>lastMountedVersion</code> 字段可以用来检查是否需要该操作。
+                  </p>
                   
-                  <p>Whenever possible, an application should delete
-                  named forks rather than orphan them.</p>
+                  <p>无论如何，程序应该删除其named forks，而非让它孤立。</p>
 </td></tr></tbody></table></center>
          
          <h3>Easy Startup of Alternative Operating Systems</h3>
@@ -422,7 +381,7 @@ CONTENTS
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   For the best performance, the allocation block size should
                   be a multiple of the sector size.  If the
                   volume has an <a href="#HFSWrapper">HFS wrapper</a>, the
@@ -454,7 +413,7 @@ CONTENTS
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The current non-contiguous algorithm in Mac OS will
                   begin allocating at the next free block it finds.
                   It will extend its allocation up to a multiple of
@@ -486,7 +445,7 @@ CONTENTS
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
 The <a href="#BTrees">B-Trees</a> section contains
 an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></table></center>
          
@@ -560,7 +519,7 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The allocation block size is a classic
                   speed-versus- space tradeoff. Increasing the
                   allocation block size decreases the size of the
@@ -920,7 +879,7 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Mac OS uses the <code>textEncoding</code> field in
                   the following way. When a file or folder is created
                   or renamed, Mac OS converts the supplied Pascal
@@ -963,7 +922,7 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
                   
  <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Mac OS uses the <code>encodingsBitmap</code> field
                   to determine which text encoding conversion tables
                   to load when the volume is mounted. Text encoding
@@ -1012,7 +971,7 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The creation date stored in
                   the Volume Header is NOT stored in GMT; it is
                   stored in local time. The reason for this is that
@@ -1184,7 +1143,7 @@ typedef struct HFSPlusBSDInfo HFSPlusBSDInfo;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b><a name="Union"></a>Note:</b><br>
+<p><b><a name="Union"></a>提示:</b><br>
 				The <code>S_IFWHT</code> and <code>UF_OPAQUE</code>
 				values are used when the file system is mounted as part
 				of a union mount.  A union mount presents the
@@ -1209,7 +1168,7 @@ typedef struct HFSPlusBSDInfo HFSPlusBSDInfo;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>
+<p><b>提示:</b><br>
 				If the <code>S_IFMT</code> field (upper 4 bits) of the <code>fileMode</code>
 				field is zero, then Mac OS X assumes that the permissions structure is
 				uninitialized, and internally uses default values for all of the fields.
@@ -1338,7 +1297,7 @@ typedef struct HFSPlusExtentDescriptor HFSPlusExtentDescriptor;</pre>
          
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The first 1024 bytes are reserved for use as boot
                   blocks; the traditional Mac OS Finder will write to them when
                   the System Folder changes. The boot block format is
@@ -1453,7 +1412,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   It is very important for implementations (and
                   utilities that directly modify the volume!) to set
                   the <code>lastMountedVersion</code>. It is also
@@ -1730,7 +1689,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Mac OS X versions 10.0 to 10.3 don't properly honor
                   <code>kHFSVolumeSoftwareLockBit</code>. They incorrectly
                   allow such volumes to be modified.  This bug is expected
@@ -1739,7 +1698,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   An implementation may keep a copy of the attributes
                   in memory and use bits 0-7 for its own runtime
                   flags. As an example, Mac OS uses bit 7,
@@ -1750,7 +1709,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The existence of two volume consistency bits
                   (<code>kHFSVolumeUnmountedBit</code> and
                   <code>kHFSBootVolumeInconsistentBit</code>)
@@ -1770,7 +1729,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
                   
   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                
+<p><b>提示:</b><br>                
                   For the boot volume, the
                   <code>kHFSBootVolumeInconsistentBit</code> should
                   be used as described but
@@ -1797,7 +1756,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   关于B-tree算法的描述，参考<cite>Algorithms in
                   C</cite>, Robert Sedgewick, Addison-Wesley, 1992.
                   ISBN: 0201514257.</p>
@@ -1819,7 +1778,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   特殊文件没有resource fork，这时因为volume header没有存储其它
                   <code>HFSPlusForkData</code> 。 但是，B-tree本身也是可以保存
                   frok的，比如extents overflow file自己保存了它的扩展extente</p>
@@ -1994,7 +1953,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The root node can be a leaf node (in the case where
                   there is only a single leaf node, and therefore no
                   index nodes, as might happen with the catalog file
@@ -2207,7 +2166,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Not using the <code>bLink</code> field is
                   consistent with the HFS volume format, but not
                   really consistent with the overall design.</p>
@@ -2246,7 +2205,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   A root node does not need to exist (if the tree is
                   empty). And even if one does exist, it need not
                   be an index node (i.e., it could be a leaf node
@@ -2308,7 +2267,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The header node is always located at the start of
                   the B-tree, so you can find it without knowing the
                   B-tree node size.</p>
@@ -2505,7 +2464,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>
+<p><b>提示:</b><br>
                   Mac OS X versions 10.2 and later, and all versions
                   of Mac OS 9 support
                   <code>kHFSCatalogNodeIDsReusedBit</code>.</p>
@@ -2580,7 +2539,7 @@ typedef struct HFSPlusCatalogKey HFSPlusCatalogKey;</pre>
               
   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The catalog file key mirrors the standard way you
                   specify a file or folder with the Mac OS File
                   Manager programming interface, with the exception
@@ -2664,7 +2623,7 @@ typedef struct HFSPlusCatalogKey HFSPlusCatalogKey;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The position of the <code>recordType</code> field,
                   and the constants chosen for the various record
                   types, are especially useful if you're writing
@@ -2813,7 +2772,7 @@ typedef struct HFSPlusCatalogFolder HFSPlusCatalogFolder;
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   The traditional Mac OS APIs use the
                   <code>contentModDate</code> when getting and
                   setting the modification date. The traditional Mac OS
@@ -3284,7 +3243,7 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   <a href="tn1150.html">Fork Data
                   Structure</a> discusses how HFS+ maintains
                   information about a fork.</p>
@@ -3344,7 +3303,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Typically, an implementation will keep a copy of
                   the initial extents from the catalog record. When
                   trying to access part of the fork, they see whether
@@ -3495,7 +3454,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   All space on an HFS+ volume is allocated in
                   terms of allocation blocks. Typically, allocation
                   blocks are larger than sectors. If a sector is
@@ -3548,7 +3507,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Because an extent record holds up to eight extents,
                   adding a bad block extent to the bad block file
                   does not necessarily require the addition of a new
@@ -3576,7 +3535,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   HFS stores allocation information in a special area
                   on the volume, known as the <b>volume bitmap</b>.
                   The allocation file mechanism used by HFS+ has
@@ -3665,7 +3624,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
                   Since the number of allocation blocks is determined
                   by a 32-bit number, the size of the allocation file
                   can be up to 512 MB in size, a radical increase
@@ -3927,7 +3886,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          Mac OS does not use the startup file to boot from HFS+
          disks. Instead, it uses the HFS wrapper, as
          <a href="#HFSWrapper">described later in this document</a>.</p>
@@ -3977,7 +3936,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The <a href="#StringComparisonAlgorithm">case-insensitive Unicode
          string comparison</a> used by HFS+ and case-insensitive
          <a href="#HFSX">HFSX</a> sorts null characters after all other
@@ -4019,7 +3978,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The inode number returned by the POSIX <code>stat</code>
          or <code>lstat</code> routines in the <code>st_ino</code>
          field of the <code>stat</code> structure is actually the
@@ -4133,7 +4092,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The pathname stored in a symbolic link is assumed to be a POSIX
          pathname, as used by the Mac OS X BSD and Cocoa programming interfaces.
          It is <b>not</b> a traditional Mac OS, or Carbon, pathname.  The path
@@ -4204,7 +4163,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
 		具体实现应该通过volume header的
 		<code>journalInfoBlock</code> 找到日志，而不是由文件名。</p>
 </td></tr></tbody></table></center>
@@ -4351,7 +4310,7 @@ typedef struct JournalInfoBlock JournalInfoBlock;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
 		Implementations must currently set
 		<code>kJIJournalInFSMask</code>, but not
 		<code>kJIJournalOnOtherDeviceMask</code>.  Journals stored on a
@@ -4581,7 +4540,7 @@ calc_checksum(unsigned char *ptr, int len)
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          Replaying the journal does not guarantee that the temporary files
          associated with <a href="#UnlinkedFiles">open but unlinked</a>
          files are deleted.  After replaying the journal, these temporary
@@ -4636,7 +4595,7 @@ calc_checksum(unsigned char *ptr, int len)
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          Remember that the journal is a circular buffer.  When reading a
          <a href="#BlockListHeader">block list header</a> or block from
          the journal buffer (in the loop described above), you will need
@@ -4685,7 +4644,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>
+<p><b>提示:</b><br>
 				A new <code>signature</code> was required because some utilities
 				did not use the <code>version</code> field properly.  They
 				would attempt to use or repair the volume (including changing the
@@ -4734,7 +4693,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
 			Do not assume that an HFSX volume is case-sensitive.
 			Always use the <code>keyCompareType</code> to determine
 			case-sensitivity or case-insensitivity.
@@ -4767,7 +4726,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>                  
+<p><b>提示:</b><br>                  
 			The null character (<code>0x0000</code>), as used in the name
 			of the "HFS+ Private Data" directory used by
 			<a href="#HardLinks">hard links</a>, sort first with
@@ -5187,7 +5146,7 @@ typedef struct HotFileKey HotFileKey;
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The Mac OS Text Encoding Converter provides several
          constants that let you convert to and from the canonical,
          decomposed form stored on HFS+ volumes. When using
@@ -5231,7 +5190,7 @@ typedef struct HotFileKey HotFileKey;
          
 <center><table border="0" width="550">
 <tbody><tr><td>
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          Mac OS versions 8.1 through 10.2.x used decompositions based on
          Unicode 2.1.  Mac OS X version 10.3 and later use decompositions
          based on Unicode 3.2.  Most of the characters whose decomposition
@@ -5299,7 +5258,7 @@ typedef struct HotFileKey HotFileKey;
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          Case-sensitive <a href="#HFSX">HFSX</a> volumes do
          <em>not</em> ignore the Unicode ignorable characters.
          Those characters are significant for the purposes of
@@ -5317,7 +5276,7 @@ typedef struct HotFileKey HotFileKey;
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The <code>FastUnicodeCompare</code> routine does not handle
          composed Unicode characters since they are illegal in HFS+ strings. As described in
          <a href="#CanonicalDecomposition">Canonical
@@ -5516,7 +5475,7 @@ UInt16 gLowerCaseTable[] = {
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          An HFS+ volume is not required to have an HFS wrapper.
          In that case, the volume will start at the beginning of
          the disk, and the volume header will be at offset 1024 bytes.
@@ -5557,7 +5516,7 @@ UInt16 gLowerCaseTable[] = {
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The description of the HFS volume format in
          <a href="http://developer.apple.com/techpubs/mac/Files/Files-102.html">Inside
          Macintosh: Files</a> describes these fields as being used to
@@ -5748,7 +5707,7 @@ UInt16 gLowerCaseTable[] = {
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>Note:</b><br>         
+<p><b>提示:</b><br>         
          The consistency check of <code>nextCatalogID</code> must be
          skipped if <code>kHFSCatalogNodeIDsReusedBit</code> is set
          in the <code>attributes</code> field of the
