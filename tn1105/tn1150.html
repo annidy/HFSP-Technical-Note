@@ -125,8 +125,7 @@ CONTENTS
   <td width="300" valign="top">
             
 <!-- begin_intro_text -->
-<p id="introtext">本技术文档用于描述HFS+分区。它并 volume. It does
-         <b>没有</b>描述任何HFS+编程接口。</p>
+<p id="introtext">本技术文档用于描述HFS+分区。它并<b>没有</b>描述任何HFS+编程接口。</p>
          
         <p id="introtext">此文档面向在文件系统抽象层以下，直接操作HFS+的底层开发人员。
          包括数据恢复或移植HFS+到其它平台的开发人员。</p>
@@ -137,6 +136,8 @@ CONTENTS
          
           <!-- end_intro_text -->
 <!-- begin_date --><h4 align="center">[Mar 05, 2004]</h4><!-- end_date -->
+         <p/>
+         <h4 align="left">译者：<a href="http://blog.csdn.net/ani_di">annidy</a> 2013年3月8日</h4>
 </td>
  </tr>
     </tbody></table>
@@ -148,9 +149,9 @@ CONTENTS
          <h2><a name="HFSPlusBasics"></a>HFS+基础</h2>
          
          <p>HFS+是Mac OS的一种分区格式。HFS+第一次出现在 <a href="http://developer.apple.com/technotes/tn/tn1121.html#HFS%20Plus">Mac
-         OS 8.1</a>. HFS+的结构类似于HFS, 有少量的改变。下表总结了主要的不同点。</p>
+         OS 8.1</a>。 HFS+的结构类似于HFS, 有少量的改变。下表总结了主要的不同点。</p>
          
-         <p align="CENTER"><b>Table 1</b> HFS 与 HFS+ 比较 </p><center>
+         <p align="CENTER"><b>表 1</b> HFS 与 HFS+ 比较 </p><center>
            <table border="1">
             <tbody><tr>
                <td>
@@ -246,13 +247,13 @@ CONTENTS
          
          <p>新增的功能并不影响编程和系统调用。Mac OS 小于 9.0 的版本没有提供有关HFS+特殊功能的接口。</p>
          
-         <p>总结来说，设计HFS+文件系统的目的是：</p>
+         <p>总体来玉来说，设计HFS+文件系统的目的是：</p>
          
          <ul>
-            <li>有效地使用磁盘空间，</li>
-            <li>国际化的文件名，</li>          
+            <li>有效地使用磁盘空间</li>
+            <li>国际化的文件名</li>          
             <li>支持未来的一些特性</li>
-            <li>可用于非Mac OS系统从HFS+启动。</li>
+            <li>可用于非Mac OS系统从HFS+启动</li>
          </ul>
          
          <p>下面的章节将会探讨HFS+是如何实现上述目标的。</p>
@@ -277,16 +278,16 @@ CONTENTS
          <h3>文件名国际化支持更好</h3>
          
          <p>HFS使用31字节的字符串储存文件名。并没有任何信息用于指示其字符集。
-         文件名的比较和排序默认使用Roman字符集。对使用其它国家（比如日本）很不
-         友好。更糟的是，即使是Roman字符集，此算法仍然有问题。Finder和其它程序
-         则根据当前系统来选择字符集。
+         文件名的比较和排序默认使用Roman字符集。对使用其它国家（比如日本）很不友好。
+         更糟的是，即使是Roman字符集，此算法仍然有问题。Finder和其它程序则根据当前系统来选择字符集。
          </p>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>
                   
-                  使用非Roman字符集问题是，HFS的文件名比较通常是大小写不敏感的。这个算法在非Roman会奇怪的失败，导致HFS认为它们名字相同，尽管事实上不相同。</p>
+                  使用非Roman字符集问题是，HFS的文件名比较通常是大小写不敏感的。
+                  这个算法在非Roman会奇怪的失败，导致HFS认为它们名字相同，尽管事实上不相同。</p>
 </td></tr></tbody></table></center>
          
          <p>HFS+ 使用255个Unicode字符储存文件名。长文件名对于计算机
@@ -402,7 +403,7 @@ CONTENTS
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The actual algorithm used to extend files is not part
                   of this specification. The implementation is not
@@ -520,30 +521,20 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  The allocation block size is a classic
-                  speed-versus- space tradeoff. Increasing the
-                  allocation block size decreases the size of the
-                  allocation file, and often reduces the number of
-                  separate extents that must be manipulated for every
-                  file. It also tends to increase the average size of
-                  a disk I/O, which decreases overhead. Decreasing
-                  the allocation block size reduces the average
-                  number of wasted bytes per file, making more
-                  efficient use of the volume's space.</p>
+                  allocation block的大小是经典的速度与空间的平衡。
+                  增加每个block的大小能减少每个文件分配的个数，加速访问。
+                  每次磁盘I/O更大，负载减小。减少block的大小可降低每个文件浪费的空间，
+                  从而更充分地利用磁盘。
+                  </p>
    </td></tr></tbody></table></center>
                   
                   <a name="SmallAllocationBlockWarning"></a>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>
-                  
-                  While HFS+ disks with an allocation block size
-                  smaller than 4 KB are legal, DTS recommends that
-                  you always use a minimum 4 KB allocation block
-                  size. Disks with a smaller allocation block size
-                  will be markedly slower when used on systems that
-                  do 4 KB clustered I/O, such as Mac OS X Server.</p>
+<p><b>警告:</b><br>
+                  尽管在HFS+上使用小于4K的block是合法的，但是DTS还是建议使用最小4K。
+                  太小会降低在4KB为簇的系统上访问性能，比如Mac OS X Server。</p>
 </td></tr></tbody></table></center>
          
          <h3>基本数据类型</h3>
@@ -553,15 +544,10 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
-                  
-                  The HFS+ volume format is largely derived from
-                  the HFS volume format. When defining the new
-                  format, it was decided to remove unused fields
-                  (primarily legacy MFS fields) and arrange all the
-                  remaining fields so that similar fields were
-                  grouped together and that all fields had proper
-                  alignment (using PowerPC alignment rules).</p>
+<p><b>重要:</b><br>
+                  HFS+的格式主要从HFS发展而来。当定义新格式时，会去除原来未使用的域（主要是MFS遗留域），
+                  并重新安排其空间，使得总大小不变，而且每个域都已对齐（使用PowerPC的对齐方式）。
+                  </p>
          </td></tr></tbody></table></center>
          
          <h4><a name="ReservedAndPadFields"></a>保留和补齐空间</h4>
@@ -576,8 +562,7 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
             <li>当改变一个结构时，不应该修改保留域中的内容。</li>
          </ul>
          
-         <p>This definition allows for backward-compatible
-         enhancements to the volume format.</p>
+         <p>这种定义方式可以有效地向后兼容。</p>
          
          <p>补齐域和保留域类似。不同点在于，前者是故意设计预留，后者是实现需要。</p>
          
@@ -587,13 +572,10 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
          <code>UInt16</code>, <code>SInt16</code>,
          <code>UInt32</code>, <code>SInt32</code>,
          <code>UInt64</code>, 和 <code>SInt64</code>。 
-         它们表示是无符号或有符号的8-bit,
-         16-bit, 32-bit, 和 64-bit 数字。</p>
+         它们表示是无符号或有符号的8-bit, 16-bit, 32-bit, 和 64-bit 数字。</p>
          
          <p>所有多字节整数都以大端对齐格式存储。 即储存的方式是从最高的有效位到最低的有效位，
-         in consecutive bytes, at increasing offset from the start of a
-         block.  字节从0到<i>n</i>-1 (比如类型
-         <code>UInt</code><i>n</i> 和 <code>SInt</code><i>n</i>),
+         字节从0到<i>n</i>-1 (比如类型<code>UInt</code><i>n</i> 和 <code>SInt</code><i>n</i>),
          第0位是最底的有效位。</p>
          
          <h4><a name="HFSPlusNames"></a>HFS+ 名字</h4>
@@ -619,50 +601,40 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
          定义的字符集在 <i> The Unicode Standard, Version 2.0</i>
          [Unicode, Inc. ISBN 0-201-48345-9] 中</p>
          
-         <p>HFS+ stores strings fully decomposed and in canonical
-         order. HFS+ 字符串比较是区分大小写的。 Strings may contain Unicode characters that must
-         be ignored by this comparison. For more details on these
-         subtleties, see <a href="#UnicodeSubtleties">Unicode
-         Subtleties</a>.</p>
+         <p>HFS+的字符串是未经压缩并按实际顺序存储的。字符串比较区分大小写，
+         但包含Unicode字符的不适用，忽略之。更多细节参见<a href="#UnicodeSubtleties">Unicode
+         细微之处</a>。</p>
          
-         <p>A variant of HFS+, called <a href="#HFSX">HFSX</a>,
-         allows volumes whose names are compared in a case-sensitive
-         fashion.  The names are fully decomposed and in canonical order,
-         but no Unicode characters are ignored during the comparison.</p>
+         <p>一种HFS+的变种，称为<a href="#HFSX">HFSX</a>，
+         允许更为新式的大小写敏感比较。也是未经压缩并按实际顺序存储，但Unicode字符参与比较。
+         </p>
          
          <h4><a name="TextEncodings"></a>文件编码</h4>
          
-         <p>传统的 Mac OS 编程接口传入的文件名是
-         Pascal strings (either as a <code>StringPtr</code> or as a
-         <code>Str63</code> embedded in an <code>FSSpec</code>). 它里面的字符不是Unicode的；
-         而是取决于系统当前的语言和默认的编码。 Identical sequences of
-         bytes can represent vastly different Unicode character
-         sequences. Similarly, many Unicode characters belong to more
-         than one Mac OS text encoding.</p>
+         <p>传统的Mac OS编程接口传入的文件名是Pascal strings(嵌在<code>FSSpec</code>中的<code>StringPtr</code>或<code>Str63</code>）。它里面的字符不是Unicode的；
+         而是取决于系统当前的语言和默认的编码。相同的序列可表示不同的Unicode字符，
+         许多Unicode字符也出现在多种Mac OS的编码中。
+         </p>
          
-         <p>HFS+ includes two features specifically designed to
-         help Mac OS handle the conversion between Mac OS-encoded
-         Pascal strings and Unicode. The first feature is the
-         <code>textEncoding</code> field of the file and folder
-         catalog records. This field is defined as a hint to be used
-         when converting the record's Unicode name back to a Mac OS-
-         encoded Pascal string.</p>
+         <p>HFS+包含2种特别设计的特性用于Pascal string和Unicode之间的转换。
+            第一个特性是在文件或目录的catalog records的
+         <code>textEncoding</code>字段。它给出了一些有用的提示。
+         </p>
          
-         <p>The valid values for the <code>textEncoding</code> field
-         are defined in Table 2.</p>
+         <p><code>textEncoding</code>字段可能的定义见表 2。</p>
          
-         <p align="CENTER"><b>Table 2</b> Text Encodings</p>
+         <p align="CENTER"><b>表 2</b> 文本编码</p>
          
          <center><table border="1">
             <tbody><tr>
                <td width="140">
-                  <p><b>Encoding Name</b></p>
+                  <p><b>编码名称</b></p>
                </td><td width="60">
-                  <p><b>Value</b></p>
+                  <p><b>值</b></p>
                </td><td width="140">
-                  <p><b>Encoding Name</b></p>
+                  <p><b>编码名称</b></p>
                </td><td width="60">
-                  <p><b>Value</b></p>
+                  <p><b>值</b></p>
                </td></tr>
             <tr>
                <td width="140">
@@ -868,30 +840,21 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
-                  Non-Mac OS implementations of HFS+ may choose
-                  to simply ignore the <code>textEncoding</code>
-                  field. In this case, the field must be treated as
-                  a <a href="#ReservedAndPadFields">保留</a>
-                  field.</p>
+                  非Mac OS的实现可能会选择忽略<code>textEncoding</code>。
+                  这种情况下，该字段应该当做<a href="#ReservedAndPadFields">保留</a>
+                  字段。</p>
           </td></tr></tbody></table></center>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  Mac OS uses the <code>textEncoding</code> field in
-                  the following way. When a file or folder is created
-                  or renamed, Mac OS converts the supplied Pascal
-                  string to a <code>HFSUniStr255</code>. It stores
-                  the source text encoding in the
-                  <code>textEncoding</code> field of the catalog
-                  record. When Mac OS needs to create a Pascal string
-                  for that record, it uses the
-                  <code>textEncoding</code> as a hint to the text
-                  conversion process. This hint ensures a high-degree
-                  of round-trip conversion fidelity, which in turn
-                  improves compatibility.</p>
+                  Mac OS在下面情况使用 <code>textEncoding</code> 字段。
+                  当创建或重命名时，Mac OS将可支持的Pascal string转换到 <code>HFSUniStr255</code>。并把原始的文本编码名存放在<code>textEncoding</code>字段。
+                  当Mac OS需要创建该record的Pascal string时，就可以用到
+                  <code>textEncoding</code>了。这一提示信息可以高度还原文本，以使兼容性得到提升。
+                  </p>
          </td></tr></tbody></table></center>
          
          <p>The second use of text encodings in HFS+ is the
@@ -908,7 +871,7 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The text encoding value is used as the number of
                   the bit to set in <code>encodingsBitmap</code> to
@@ -935,7 +898,7 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>
+<p><b>警告:</b><br>
                   
                   Non-Mac OS implementations of HFS+ must
                   correctly maintain the <code>encodingsBitmap</code>
@@ -1135,7 +1098,7 @@ typedef struct HFSPlusBSDInfo HFSPlusBSDInfo;</pre>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>                  
+<p><b>警告:</b><br>                  
                   Mac OS 8 and 9 treat the permissions as
                   <a href="#ReservedAndPadFields">保留</a>.</p>
                
@@ -1246,7 +1209,7 @@ typedef HFSPlusExtentDescriptor HFSPlusExtentRecord[8];</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The <code>HFSPlusExtentRecord</code> is also the
                   data record used in the
@@ -1318,7 +1281,7 @@ typedef struct HFSPlusExtentDescriptor HFSPlusExtentDescriptor;</pre>
          
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   备份volume header总是位于分区最后1024字节。如果分区大小不是
                   allocation block对齐的，这一部分可能超出了allocation block
                   的指示。</p>
@@ -1877,7 +1840,7 @@ typedef struct BTNodeDescriptor BTNodeDescriptor;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   <b>list of record offsets</b> 至少有1个record的记录。
                   如果node中没有空间存放更多record时，则它会指向它自己（Entry？）的位置。</p>
@@ -2182,7 +2145,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   所有 HFS+ B-trees 的 key length 都是 <code>UInt16</code>。</p>
         </td></tr></tbody></table></center>
@@ -2289,7 +2252,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The node size of the catalog file must be at least
                   <code>kHFSPlusCatalogMinNodeSize</code> (4096).</p>
@@ -2297,7 +2260,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
                   
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The node size of the attributes file must be at
                   least <code>kHFSPlusAttrMinNodeSize</code> (4096).</p>
@@ -2524,7 +2487,7 @@ typedef struct HFSPlusCatalogKey HFSPlusCatalogKey;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The length of the key varies with the length of the
                   string stored in the <code>nodeName</code> field;
@@ -2734,7 +2697,7 @@ typedef struct HFSPlusCatalogFolder HFSPlusCatalogFolder;
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The traditional Mac OS File Manager programming
                   interfaces require folders to have a valence less
@@ -2798,7 +2761,7 @@ typedef struct HFSPlusCatalogFolder HFSPlusCatalogFolder;
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The traditional Mac OS implementation of HFS+ does not
                   maintain the <code>accessDate</code> field. Folders
@@ -2821,7 +2784,7 @@ typedef struct HFSPlusCatalogFolder HFSPlusCatalogFolder;
 		         
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The traditional Mac OS implementation of HFS+ does not use
                   the <code>permissions</code> field. Folders created
@@ -2943,7 +2906,7 @@ typedef struct HFSPlusCatalogFile HFSPlusCatalogFile;
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The traditional Mac OS implementation of HFS+ does not
                   maintain the <code>accessDate</code> field. Files
@@ -2970,7 +2933,7 @@ typedef struct HFSPlusCatalogFile HFSPlusCatalogFile;
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The traditional Mac OS implementation of HFS+ does not use
                   the <code>permissions</code> field. Files created
@@ -3067,7 +3030,7 @@ typedef struct HFSPlusCatalogFile HFSPlusCatalogFile;
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   HFS, 只有folders必须要thread records，而文件是可选的。在HFS+，文件和目录都需要。</p>
          </td></tr></tbody></table></center>
@@ -3333,7 +3296,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   Remember that the <code>HFSPlusExtentRecord</code>
                   contains descriptors for eight extents. The first
@@ -3485,7 +3448,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
 
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The bad block file is necessary because marking a
                   bad block as used in the allocation file is
@@ -3633,7 +3596,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
   
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   Because the entire volume is composed of allocation
                   blocks (with the possible
@@ -3684,7 +3647,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
 
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   目前没有定义如何如组织里面的数据。特别是：</p>
                   
@@ -3712,7 +3675,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
 
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   Several types of attributes file data records are
                   defined. It is possible that additional record
@@ -3876,7 +3839,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          It is legal for the startup file to contain more than eight
          extents, and for the remaining extents to be placed in the
@@ -4130,7 +4093,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>         
+<p><b>重要:</b><br>         
 		Implementations accessing a journaled volume with transactions
 		must either refuse to access the volume, or replay the journal
 		to be sure the volume is consistent.  If the
@@ -4616,7 +4579,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>
+<p><b>警告:</b><br>
 		You must ensure that previous block writes complete before updating
 		the journal header's <code>start</code> field on disk.  One way to
 		do this is to issue a flush to the device driver and wait until
@@ -4654,7 +4617,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>
+<p><b>警告:</b><br>
 				If your implementation encounters an HFSX volume with a
 				<code>version</code> value it does not recognize, it must
 				not attempt to access or repair the volume.  Catastrophic
@@ -4716,7 +4679,7 @@ calc_checksum(unsigned char *ptr, int len)
 
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>                  
+<p><b>重要:</b><br>                  
 			Case-sensitive names do not ignore Unicode "ignorable"
 			characters. This means that a single directory may have several
 			names which would be considered equivalent using Unicode comparison
@@ -5124,7 +5087,7 @@ typedef struct HotFileKey HotFileKey;
          
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          Before reading this section, you should read
          <a href="#HFSPlusNames">HFS+ Names</a>.</p>
@@ -5132,7 +5095,7 @@ typedef struct HotFileKey HotFileKey;
          
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          An implementation must not use the Unicode utilities
          implemented by its native platform (for decomposition and
@@ -5211,7 +5174,7 @@ typedef struct HotFileKey HotFileKey;
 
                   <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
                   
                   The characters with codes in the range u+2000
                   through u+2FFF are punctuation, symbols, dingbats,
@@ -5463,7 +5426,7 @@ UInt16 gLowerCaseTable[] = {
 
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          This section does not describe the HFS+ volume format;
          instead, it describes additions to the HFS volume format
@@ -5536,7 +5499,7 @@ UInt16 gLowerCaseTable[] = {
 
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          This embedding introduces a transform between HFS+
          volume offsets and disk offsets. The HFS+ volume exists
@@ -5615,7 +5578,7 @@ UInt16 gLowerCaseTable[] = {
 
          <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>IMPORTANT:</b><br>
+<p><b>重要:</b><br>
          
          This section is not part of the HFS+ volume format. It
          describes how the existing Mac OS implementation of HFS+
@@ -5745,7 +5708,7 @@ UInt16 gLowerCaseTable[] = {
       
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
-<p><b>WARNING:</b><br>
+<p><b>警告:</b><br>
          
          为了保护数据不丢失，每次mount时都应该检查。已分配的block没有标记
          是很严重的；其次是没有使用block标记为占用。</p>
@@ -5845,29 +5808,10 @@ that allows for case-sensitive file and directory names.</p>
                </td></tr>
          </tbody></table></center>
          
-         <p><a href="#top">Back to top</a></p>
          
 
 </td></tr></tbody></table></center>
-<!-- begin_footer_information --><div id="feedbackForm" class="hideOnPrint" style="margin-left: auto; margin-right: auto; width: 38em; margin-bottom: 15px; margin-top: 15px; font-weight: bold; color: #333333; background: #d9d9d9; padding: 5px 10px 5px 10px; height: 15px; text-align: center; -webkit-border-radius: 12px; -moz-border-radius: 12px; vertical-align: middle;">
-    Did this document help you?
-    <span class="tooltip" data-abstract="&lt;b&gt;Yes:&lt;/b&gt; Tell us what works for you.">
-       <a href="http://developer.apple.com/feedback/?v=1" class="urlLink">Yes</a>
-    </span>
-    <span class="tooltip" data-abstract="&lt;b&gt;It&#39;s good, but:&lt;/b&gt; Report typos, inaccuracies, and so forth.">
-        <a href="http://developer.apple.com/feedback/?v=2" class="urlLink">It's good, but...</a>
-    </span>
-    <span class="tooltip" data-abstract="&lt;b&gt;Not helpful:&lt;/b&gt; Tell us what would have helped.">
-        <a href="http://developer.apple.com/feedback/?v=3" class="urlLink">Not helpful...</a>
-    </span>
-</div><div id="globalfooter" class="hideInXcode hideOnPrint">
-    <p class="gf-buy">Shop the <a href="http://www.apple.com/store/" target="_top">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/" target="_top">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/" target="_top">reseller</a>.</p>
-
-<ul class="gf-links piped">
-	<li><a class="first" href="http://lists.apple.com/" target="_top">Mailing Lists</a></li>
-	<li><a href="http://developer.apple.com/rss/" target="_top">RSS Feeds</a></li>
-</ul>
-
+<div id="globalfooter" class="hideInXcode hideOnPrint">
 <div class="gf-sosumi">
     <p>Copyright © 2010 Apple Inc. All rights reserved.</p>
     <ul class="piped">
