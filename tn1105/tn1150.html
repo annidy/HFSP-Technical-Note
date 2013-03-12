@@ -330,19 +330,16 @@ CONTENTS
                   <p>无论如何，程序应该删除其named forks，而非让它孤立。</p>
 </td></tr></tbody></table></center>
          
-         <h3>Easy Startup of Alternative Operating Systems</h3>
+         <h3>轻松设置启动分区</h3>
          
-         <p>HFS+ defines a special <strong>startup file</strong>,
-         an unstructured fork that can be found easily during system
-         startup. The location and size of the startup file is
-         described in the <a href="#VolumeHeader">volume header</a>.
-         The startup file is especially useful on systems that don't
-         have HFS or HFS+ support in ROM. In many respects, the
-         startup file is a generalization of the HFS boot blocks, one
-         that provides a much larger, variable-sized amount of
-         storage.</p>
+         <p>HFS+定义了一个单独的 <strong>startup file</strong>，
+            它的非结构fork使得在启动时非常方便地就可以访问。
+            <a href="#VolumeHeader">volume header</a> 中定义了文件的位置和大小。
+            由于一些系统的ROM并不支持HFS或HFS+系统。在许多方面，启动文件可以看做是HFS的引导分区，
+            而且更大，更容易调整（译注：例如NTFS的启动扇区）。
+         </p>
          
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="CoreConcepts"></a>核心内容</h2>
@@ -857,68 +854,48 @@ typedef const  HFSUniStr255 *ConstHFSUniStr255Param;</pre>
                   </p>
          </td></tr></tbody></table></center>
          
-         <p>The second use of text encodings in HFS+ is the
-         <code>encodingsBitmap</code> field of the volume header. For
-         each encoding used by a catalog node on the volume, the
-         corresponding bit in the <code>encodingsBitmap</code> field
-         must be set.</p>
+         <p>另一种使用则是在volume header的<code>encodingsBitmap</code> 字段。
+            每个在catalog中使用过的文本编码，其应的bit都需要在 <code>encodingsBitmap</code> 中设置。
+         </p>
          
-         <p>It is acceptable for a bit in this bitmap to be set even
-         though no names on the volume use that encoding. This means
-         that when an implementation deletes or renames an object, it
-         does not have to clear the encoding bit if that was the last
-         name to use the given encoding.</p>
+         <p>删除文件时，不必清理此字段的对应位。
+            这表示，即使没有任何文件存在，此字段也可以不为空。
+         </p>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>重要:</b><br>
                   
-                  The text encoding value is used as the number of
-                  the bit to set in <code>encodingsBitmap</code> to
-                  indicate that the encoding is used on the volume.
-                  However, <code>encodingsBitmap</code> is only 64
-                  bits long, and thus the text encoding values for
-                  MacFarsi and MacUkrainian cannot be used as bit
-                  numbers. Instead, another bit number (shown in
-                  parenthesis) is used.</p>
+                  <code>encodingsBitmap</code> 主要用于统计本分区使用的编码。
+                  它有64位可用，事实上MacFarsi和MacUkrainian不能直接保存，它们使用了别的位置。
+                  </p>
             </td></tr></tbody></table></center>
                   
  <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  Mac OS uses the <code>encodingsBitmap</code> field
-                  to determine which text encoding conversion tables
-                  to load when the volume is mounted. Text encoding
-                  conversion tables are large, and loading them
-                  unnecessarily is a waste of memory. Most systems
-                  only use one text encoding, so there is a
-                  substantial benefit to recording which encodings
-                  are required on a volume-by-volume basis.</p>
+                  Mac OS使用 <code>encodingsBitmap</code> 来决定那些转换表需要在mount时加载。
+                  由于转换表太大，会花费很多时间和内存。对于不需要的转换表最好不要加载。
+                  </p>
                   </td></tr></tbody></table></center>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>警告:</b><br>
                   
-                  Non-Mac OS implementations of HFS+ must
-                  correctly maintain the <code>encodingsBitmap</code>
-                  field. Specifically, if the implementation sets the
-                  <code>textEncoding</code> field a catalog record to
-                  a text-encoding value, it must ensure that the
-                  corresponding bit is set in
-                  <code>encodingsBitmap</code> to ensure correct
-                  operation when that disk is mounted on a system
-                  running Mac OS.</p>
+                  非Mac OS的HFS+实现必须正确维护 <code>encodingsBitmap</code>
+                  字段。要确保使用过的文本编码在 <code>textEncoding</code> 
+                  有相关记录。否则Mac OS在读写时可能会出现异常。
+                  </p>
          </td></tr></tbody></table></center>
          
          <h4><a name="HFSPlusDates"></a>HFS+ 时间</h4>
          
-         <p>HFS+ 在几个地方储存了时间，volume header 和 catalog records。
-         它们的类型是32-bit integers (<code>UInt32</code>)，取之自1904年1月1日以来的秒数 GMT。
+         <p>HFS+在几个地方储存了时间，volume header和catalog records。
+         它们的类型是32-bit整型(<code>UInt32</code>)，取之自1904年1月1日以来的秒数（GMT）。
          而HFS直接是当地时间。</p>
          
-         <p>最大能表示的时间是February 6, 2040 at
-         06:28:15 GMT.</p>
+         <p>HFS+最大能表示的时间是February 6, 2040 06:28:15 GMT。</p>
          
          <p>The date values do not account for leap seconds. They do
          include a leap day in every year that is evenly divisible by
@@ -1245,7 +1222,7 @@ typedef struct HFSPlusExtentDescriptor HFSPlusExtentDescriptor;</pre>
          </dl>
       
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="VolumeHeader"></a>Volume Header</h2>
@@ -1712,7 +1689,7 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
                   of a slower Mac OS boot.)</p>
                </td></tr></tbody></table></center>
                
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="BTrees"></a>B-Trees</h2>
@@ -2285,7 +2262,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          file). It also means that the number of keys in an index
          node will vary with the actual size of the keys.</p><br>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="CatalogFile"></a>Catalog File</h2>
@@ -3196,7 +3173,7 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;</pre>
 </tr>
 </tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
          <h2><a name="ExtentsOverflowFile"></a>Extents Overflow File</h2>
          
@@ -3481,7 +3458,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
          bad blocks. This facility is used by the
          <a href="#HFSWrapper">HFS Wrapper</a> to hold an entire HFS+ volume as bad blocks on an HFS disk.</p>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="AllocationFile"></a>Allocation File</h2>
@@ -3624,7 +3601,7 @@ typedef struct HFSPlusExtentKey HFSPlusExtentKey;</pre>
                   areas.</p>
       </td></tr></tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="AttributesFile"></a>Attributes File</h2>
@@ -3823,7 +3800,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
          <p>参考 <a href="#AllocationFileConsistencyCheck">Allocation
          File　一致性检查</a> 更多细节</p><br>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="StartupFile"></a>Startup File</h2>
@@ -3856,7 +3833,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
 </td></tr></tbody></table></center>
 
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 
          <h2><a name="HardLinks"></a>Hard Links</h2>
@@ -4024,7 +4001,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
          hard link by determining the proper link reference.  Otherwise, the
          hard link should be deleted.</p>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
          
          <h2><a name="Symlinks"></a>Symbolic Links</h2>
          
@@ -4066,7 +4043,7 @@ typedef struct HFSPlusAttrExtents HFSPlusAttrExtents;</pre>
          compatibility, the length of the path should be 1024 bytes or less.</p>
 </td></tr></tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 		<h2><a name="Journal"></a>Journal</h2>
 		
@@ -4588,7 +4565,7 @@ calc_checksum(unsigned char *ptr, int len)
 		to the media.</p>
 </td></tr></tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
          <h2><a name="HFSX"></a>HFSX</h2>
          
@@ -4697,7 +4674,7 @@ calc_checksum(unsigned char *ptr, int len)
 			compares.
 </p></td></tr></tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 		<h2><a name="MetadataZone"></a>Metadata Zone</h2>
 		
@@ -5075,7 +5052,7 @@ typedef struct HotFileKey HotFileKey;
 		temperature can be computed by dividing its <code>clumpSize</code> by
 		its <code>totalBlocks</code>.</p>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
          
          <h2><a name="UnicodeSubtleties"></a>Unicode Subtleties</h2>
          
@@ -5392,7 +5369,7 @@ UInt16 gLowerCaseTable[] = {
 </tbody></table></center>
 
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
          <h2><a name="HFSWrapper"></a>HFS Wrapper</h2>
          
@@ -5619,7 +5596,7 @@ UInt16 gLowerCaseTable[] = {
          the MDB.</p>
      
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
          
          <h2><a name="VolumeConsistencyChecks"></a>Volume Consistency Checks</h2>
@@ -5714,14 +5691,14 @@ UInt16 gLowerCaseTable[] = {
          是很严重的；其次是没有使用block标记为占用。</p>
 </td></tr></tbody></table></center>
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
          <h2><a name="Summary"></a>Summary</h2>
          
          <p>Volume format specifications are <del>fun</del> <ins>exhausting</ins>.</p>
       
 
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
 
 		<h2><a name="References"></a>References</h2>
 
@@ -5793,7 +5770,7 @@ that allows for case-sensitive file and directory names.</p>
                </td></tr>
          </tbody></table>
          
-<p><a href="#top">Back to top</a></p>
+<p><a href="#top">返回顶部</a></p>
          
          <h2 style="display: none; "><a name="Downloads"></a>Downloadables</h2>
          
