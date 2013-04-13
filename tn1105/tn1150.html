@@ -64,7 +64,7 @@ Unicode Subtleties, HFS Wrapper, and Volume Consistency Checks.">
   <tr bgcolor="#e6e6e6">
    <td background="tnmenubody.gif" width="300">
  <span id="menutitle">
-CONTENTS 
+目录 
   <br>
   <br>
  </span>
@@ -380,45 +380,36 @@ CONTENTS
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  For the best performance, the allocation block size should
-                  be a multiple of the sector size.  If the
-                  volume has an <a href="#HFSWrapper">HFS wrapper</a>, the
-                  wrapper's allocation block size and allocation block start
-                  should also be multiples of the sector size to
-                  allow the best performance.</p>
+                  为了提高性能，allocation block的大小最好是扇区的整数倍。
+                  如果卷里面包含了 <a href="#HFSWrapper">HFS wrapper</a>，
+                  则wrapper的allocation block的大小和位置也应该是扇区的整数倍。
+                  </p>
 </td></tr></tbody></table></center>
 
          <p>所有卷里的结构，包括卷头都是一个或多个allocation blocks的一部分 (可变卷头除外，
          <a href="#OddSizeVolumes">见下</a>). 这一点与HFS不同，它有很多结构(boot blocks, master
          directory block, and bitmap) 不属于任何一个allocation block.</p>
          
-         <p><a name="Clump"></a>To promote file contiguity and avoid
-         fragmentation, disk space is typically allocated to files in
-         groups of allocation blocks, or <b>clumps</b>. The clump size
-         is always a multiple of the allocation block size. The default
-         clump size is specified in the volume header.</p>
+         <p><a name="Clump"></a>为了让文件尽可能地相邻，避免出现碎片，
+            磁盘通常将文件分为几个allocation block组or <b>clumps</b>。
+            clump的大小问题allocation block的整数倍。默认组大小在volume header指定。</p>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>重要:</b><br>
                   
-                  The actual algorithm used to extend files is not part
-                  of this specification. The implementation is not
-                  required to act on the clump values in the volume
-                  header; it merely provides space to store those
-                  values.</p>
+                  真实的文件分配算法在本文档中没有叙述。
+                  算法的实现也没有要求一定要使用clump。
+                  基本上它只是让volume header提供一个空间而已。
+                  </p>
            </td></tr></tbody></table></center>
                   
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  The current non-contiguous algorithm in Mac OS will
-                  begin allocating at the next free block it finds.
-                  It will extend its allocation up to a multiple of
-                  the clump size if there is sufficient free space
-                  contiguous with the end of the requested
-                  allocation. Space is not allocated in contiguous
-                  clump-sized pieces.</p>
+                  Mac OS目前针对非临近的文件分配是直接它找到的下一个空闲block。
+                  并连续分配最大的clump整数倍空间。起辅助防止碎片的作用。
+                  </p>
                   </td></tr></tbody></table></center>
          
          <p>每个HFS+ 卷都是有一个 <b>volume header</b>.
@@ -1454,12 +1445,10 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
             
             <dt><code>encodingsBitmap</code></dt>
             
-            <dd>This field keeps track of the text encodings used in
-            the file and folder names on the volume. This bitmap
-            enables some performance optimizations for
-            implementations that don't use Unicode names directly.
-            See the <a href="#TextEncodings">Text Encoding</a>
-            sections for details.</dd>
+            <dd>该字段用于跟踪分区上使用的文本编码。
+               能够优化一些未使用Unicode编码格式。见
+            <a href="#TextEncodings">Text Encoding</a>
+            一节</dd>
             
             <dt><a name="VolumeFinderInfo"></a><code>finderInfo</code></dt>
             
