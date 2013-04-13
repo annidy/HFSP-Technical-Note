@@ -495,16 +495,10 @@ an in-depth description of the B-trees used by HFS+.</p></td></tr></tbody></tabl
          volume header 和 alternate volume header 之间的任一
          block。 它们之间的顺序也没有任何规定。</p>
          
-         <p>The information on HFS+ volumes (with the possible
-         exception of the alternate volume header, as discussed
-         <a href="#OddSizeVolumes">below</a>) is organized solely
-         in allocation blocks. Allocation blocks are simply a means
-         of grouping space on the media into convenient parcels.
-         The size of an allocation block is a power of two,
-         and at least 512. The allocation block size is a volume
-         header parameter whose value is set when the volume is
-         initialized; it cannot be changed easily without
-         reinitializing the volume.</p>
+         <p>HFS+卷上的信息独立储存于allocation blocks（alternate volume header
+            是例外，
+         <a href="#OddSizeVolumes">参见</a>）。allocation blocks是为了方便管理而人为划分的一组空间。
+         大小是2个幂，最小512。allocation block的大小在分区初始化即已确定，并且以后不可更改。</p>
          
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
@@ -1694,14 +1688,13 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
                   pointer 指向的子树；反之则是 #X+1 pointer。（如果相等，则取决于具体实现是用
                    #X 或 #X+1 指针）</p>
                   
-                  <p>HFS 和 HFS+ 有轻微的不同；在一个给定的子树中，没有比根节点更小的key。 in a
-                  given subtree, there are no keys less than the
-                  first key of that subtree's root node.</p>
+                  <p>HFS 和 HFS+ 有轻微的不同；在一个给定的子树中，没有比根节点更小的key。
+                  </p>
          </td></tr></tbody></table></center>
        
          
-         <p>本章介绍了catalog, extents overflow, 和 attributes files用到的B-tree结构。
-         B-tree存储在 data fork 中。每个文件中的B-tree都由位于volume header的
+         <p>本章介绍了catalog, extents overflow, 和attributes files用到的B-tree结构。
+         B-tree存储在data fork中。每个'文件'中的B-tree都由位于volume header的
          <code><a href="tn1150.html">HFSPlusForkData</a></code>
          确定存储的空间。</p>
          
@@ -1709,34 +1702,34 @@ typedef struct HFSPlusVolumeHeader HFSPlusVolumeHeader;</pre>
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
                   特殊文件没有resource fork，这时因为volume header没有存储其它
-                  <code>HFSPlusForkData</code> 。 但是，B-tree本身也是可以保存
-                  frok的，比如extents overflow file自己保存了它的扩展extente</p>
+                  <code>HFSPlusForkData</code> 。 但是，B-tree本身也是可以保存frok的，
+                  比如extents overflow自己保存了它的扩展extent</p>
          </td></tr></tbody></table></center>
          
          <p>B-tree文件由许多固定大小的<b>nodes</b>, <b>nodes</b>包含了许多<b>records</b>，
          而 <b>records</b> 又包含了 <b>key</b> 和其它数据。B-tree的目的就是快速搜索到key和
-         它对应的数据。所以它是按一定顺序存放的，并且key 就是用于顺序比较操作。</p>
+         它对应的数据。所以它是按一定顺序存放的，并且key就是用于顺序比较操作。</p>
          
-         <p> <b>node size</b> (which is expressed in bytes) 必须是2的幂次，范围在 512 到 32,768。
+         <p> <b>node size</b> 必须是2的幂次，范围在 512 到 32,768。
          node的大小在B-tree创建出来时就已经确定了。而整个B-tree文件的大小等于node size乘以node数量。</p>
          
          <p>总共有4种不同类型的node。</p>
          
          <ul>
-            <li>每个B-tree包含一个 <b>header node</b>. 
-            header node 问题 B-tree 的第一个node。它包含了一些信息用于找到其它node。</li>
+            <li>每个B-tree包含一个 <b>header node</b>。 
+            header node一定是B-tree的第一个node。它包含了一些信息用于找到其它node。</li>
             
-            <li><b>Map nodes</b> 包含 <b>map records</b>, 是header node中map record不够用时的附加部分，用于保存所有分配信息
-            (可标识出B-tree那些结点是可用的) 。</li>
+            <li><b>Map nodes</b> 包含 <b>map records</b>，是在header node中map record不够用时的附加部分，用于保存所有分配信息
+            (可标识出B-tree那些结点是可用的)。</li>
             
-            <li><b>Index nodes</b> 包含 <b>pointer records</b>, 它决定了B树的整体结构。</li>
+            <li><b>Index nodes</b> 包含 <b>pointer records</b>，它决定了B树的整体结构。</li>
             
-            <li><b>Leaf nodes</b> 包含 <b>data records</b>，它与某个key对应，B-tree中每个key都是唯一的。</li>
+            <li><b>Leaf nodes</b> 包含 <b>data records</b>，它与某个key对应。B-tree中每个key都是唯一的。</li>
          </ul>
          
          <p>所有的结点都有一个相同的结构，描述如下。</p>
          
-         <h3>Node Structure</h3>
+         <h3>Node结构</h3>
          
          <p>Nodes都是由数字（偏移）来找到的。结点号乘以每个节点大小即可得到在文件中的偏移。
          每个node都有一个相同的结构，保存了三个重要的部分：node descriptor，node后面的record offset链表和包含的records。
@@ -1797,12 +1790,10 @@ typedef struct BTNodeDescriptor BTNodeDescriptor;</pre>
             <a href="#ReservedAndPadFields">保留</a> </dd>
          </dl>
          
-         <p>因为 node descriptor 总是占用14字节 (
-         <code>sizeof(BTNodeDescriptor)</code>) ，所以在
+         <p>因为node descriptor总是占用14字节 (<code>sizeof(BTNodeDescriptor)</code>) ，所以在
          <b>list of records</b> 总是会有一个指向14字节后的record。每个record的大小是不固定的。</p>
          
-         <p>records 都是通过 <b>list of record
-         offsets</b> 来访问的。每个offset都是一个 <code>UInt16</code>。从上图可看到，它是反向存储的。</p>
+         <p>records 都是通过 <b>list of record offsets</b> 来访问的。每个offset都是 <code>UInt16</code>。从上图可看到，它是反向存储的。</p>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
@@ -1812,7 +1803,7 @@ typedef struct BTNodeDescriptor BTNodeDescriptor;</pre>
                   如果node中没有空间存放更多record时，则它会指向它自己（Entry？）的位置。</p>
          </td></tr></tbody></table></center>
          
-         <p> <code>kind</code> 表示了些node的类型，竟而说明了它包含records的类型，也就决定了B-tree的组织。
+         <p> <code>kind</code> 表示了些node的类型，竟而说明了它包含records的类型，也就决定了其在B-tree的位置。
          下面是4种可能的情况。</p>
          
 
@@ -1829,30 +1820,28 @@ typedef struct BTNodeDescriptor BTNodeDescriptor;</pre>
 </tr>
 </tbody></table></center>
          
-         <p>节点的类型对于B-tree非常重要。叶节点只会包含data records。索引节点
-         只会包含指针。Map节点只会包含map records。头节点只会包含一个header record，
-         reserved record, 和 map record。每个类型具体的描述会在下节。</p>
+         <p>节点的类型对于B-tree非常重要。叶节点只会包含data records。索引节点只会包含指针。Map节点只会包含map records。头节点只会包含一个header record，reserved record和map record。每个类型具体的描述会在下节。</p>
          
          <h3><a name="HeaderNode"></a>Header Nodes</h3>
          
-         <p>第一个 node (node 0) 总是 header node，它包含了很多重要信息。
-         共3个记录在此node里。第一个是 B-tree header record。第二个是 user data record，
-         长度固定128字节。最后一个是 B-tree map record; 它占据了后面所有空间。
-         图3 显示了 header node。</p>
+         <p>第一个node (node 0)总是header node，它包含了很多重要信息。
+         共3个记录在此node里。第一个是 B-tree header record。第二个是user data record，
+         长度固定128字节。最后一个是 B-tree map record，它占据了后面所有空间。
+         图3 显示了header node。</p>
          
          <center>
          <img src="tn1150_003.png" alt="Header node" width="198" height="306" align="bottom">
-         <p><b>Figure 3</b> Header node 结构</p>
+         <p><b>图 3</b> Header node结构</p>
          </center>
          
-         <p>header node 的 <code>fLink</code> 是第一个map node的node number。如果没有map node则为0.
+         <p>header node的 <code>fLink</code> 是第一个map node的node number。如果没有map node则为0.
          <code>bLink</code> 总是设置为0.
          </p>
          
          <h4><a name="HeaderRecord"></a>Header Record</h4>
          
-         <p>B-tree 的 <b>header record</b> 包含的内容包括总大小，最大key length，
-         以及第一个后最后一个叶节点的node。它的保存结构是 <code>BTHeaderRec</code>。</p>
+         <p>B-tree的 <b>header record</b> 包含的内容包括总大小，最大key length，
+         以及第一个和最后一个叶节点的node。它的结构是 <code>BTHeaderRec</code>。</p>
          
 
 <center><table border="0" cellpadding="5" width="550">
@@ -1883,25 +1872,13 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  The root node can be a leaf node (in the case where
-                  there is only a single leaf node, and therefore no
-                  index nodes, as might happen with the catalog file
-                  on a newly initialized volume). If a tree has no
-                  leaf nodes (like the extents overflow file on a
-                  newly initialized volume), the
-                  <code>firstLeafNode</code>,
-                  <code>lastLeafNode</code>, and
-                  <code>rootNode</code> fields will all be zero. If
-                  there is only one leaf node (as may be the case
-                  with the catalog file on a newly initialized
-                  volume), <code>firstLeafNode</code>,
-                  <code>lastLeafNode</code>, and
-                  <code>rootNode</code> will all have the same value
-                  (i.e., the node number of the sole leaf node). The
-                  <code>firstLeafNode</code> and
-                  <code>lastLeafNode</code> fields just make it easy
-                  to walk through all the leaf nodes by just
-                  following <code>fLink/bLink</code> fields.</p>
+                  根node可能也是叶node（当只有一个叶node，所以也就没有索引node，
+                  通常在创建卷时出现）。如果树没有叶node，
+                  <code>firstLeafNode</code>，<code>lastLeafNode</code>，和
+                  <code>rootNode</code> 都是0。如果只有一个叶node，<code>firstLeafNode</code>,
+                  <code>lastLeafNode</code>，和<code>rootNode</code> 值相同。
+                  <code>firstLeafNode</code> 和<code>lastLeafNode</code> 主要起方便遍历所有的叶node。
+               </p>
          </td></tr></tbody></table></center>
          
          <p>结构中各个域的作用如下：</p>
@@ -1913,7 +1890,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             
             <dt><code>rootNode</code></dt>
             
-            <dd>root node number, 它是B-tree的根index node。参考
+            <dd>root node号, 它是B-tree的根index node。参考
             <a href="#IndexNodes">Index Nodes</a> 获取更多细节。
             有一种可能 <code>rootNode</code> 成为叶节点，细节参考 <a href="http://developer.apple.com/techpubs/mac/Files/">Inside
             Macintosh: Files</a>, pp. 2-69。</dd>
@@ -1924,11 +1901,11 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             
             <dt><code>firstLeafNode</code></dt>
             
-            <dd>第一个叶节点的node number。如果为0，则表示没有。</dd>
+            <dd>第一个叶节点的node号。如果为0，则表示没有。</dd>
             
             <dt><code>lastLeafNode</code></dt>
             
-            <dd>最后一个叶节点的node number。</dd>
+            <dd>最后一个叶节点的node号。</dd>
             
             <dt><code>nodeSize</code></dt>
             
@@ -1937,19 +1914,18 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             <dt><code>maxKeyLength</code></dt>
             
             <dd>索引和叶节点中key的最大长度。
-            HFSVolumes.h has the <code>maxKeyLength</code> values for
-            the catalog and extents files for both HFS and HFS+
-            (<code>kHFSPlusExtentKeyMaximumLength</code>,
-            <code>kHFSExtentKeyMaximumLength</code>,
-            <code>kHFSPlusCatalogKeyMaximumLength</code>,
-            <code>kHFSCatalogKeyMaximumLength</code>). The maximum
+            HFSVolumes.h 有一个 <code>maxKeyLength</code> 值用于HFS和HFS+的catalog和extents文件
+            (<code>kHFSPlusExtentKeyMaximumLength</code>，
+            <code>kHFSExtentKeyMaximumLength</code>，
+            <code>kHFSPlusCatalogKeyMaximumLength</code>，
+            <code>kHFSCatalogKeyMaximumLength</code>)。 The maximum
             key length for the attributes B-tree will probably be a
             little larger than for the catalog file. 通常，<code>maxKeyLength</code>
-            会比较小以便一个node可以容纳2个最大的key和一个node descriptor，以及offsets list。</dd>
+            会比较小，以便一个node可以容纳2个最大的key和一个node descriptor，以及offsets list。</dd>
             
             <dt><code>totalNodes</code></dt>
             
-            <dd>B-tree中所有node的总数（包括已使用和未使用）。B-tree文件大大小等于totalNodes*nodeSize.</dd>
+            <dd>B-tree中所有node的总数（包括已使用和未使用）。B-tree文件大小等于totalNodes*nodeSize.</dd>
             
             <dt><code>freeNodes</code></dt>
             
@@ -1962,16 +1938,9 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             
             <dt><code>clumpSize</code></dt>
             
-            <dd>Ignored for HFS+ B-trees. The
-            <code>clumpSize</code> field of the
-            <code><a href="tn1150.html">HFSPlusForkData</a></code>
-            record is used instead. For maximum compatibility, an
-            implementation should probably set the
-            <code>clumpSize</code> in the node descriptor to the same
-            value as the <code>clumpSize</code> in the
-            <code>HFSPlusForkData</code> when initializing a volume.
-            Otherwise, it should treat the header records's
-            <code>clumpSize</code> as reserved.</dd>
+            <dd>HFS+的B-trees忽略。而是采用 <code><a href="tn1150.html">HFSPlusForkData</a></code> 中的
+            <code>clumpSize</code> 。为了更好的兼容性，最好使这里的<code>clumpSize</code> 和
+            <code>HFSPlusForkData</code> 在创建分区时保持以致，在实现时，这个字段应该当作保留字段。</dd>
             
             <dt><code>btreeType</code></dt>
             
@@ -1989,7 +1958,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 </tr>
 </tbody></table></center>
             <p>此域的值必须等于 
-            <a href="#CatalogFile">catalog</a>, <a href="#ExtentsOverflowFile">extents</a>, 和 <a href="#AttributesFile">attributes</a> 的B-trees <code>kHFSBTreeType</code>.  
+            <a href="#CatalogFile">catalog</a>，<a href="#ExtentsOverflowFile">extents</a>，和 <a href="#AttributesFile">attributes</a> 的B-trees <code>kHFSBTreeType</code>.  
             以及 <a href="#HotFile">hot file</a> 的B-tree <code>kUserBTreeType</code>。1-127的值历史上曾用于Mac OS 9的系统软件上。</p>
             </dd>
             
@@ -2040,30 +2009,24 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             
             <dt><code>kBTBigKeysMask</code></dt>
             
-            <dd>If this bit is set, the <code>keyLength</code> field
-            of the keys in index and leaf nodes is
-            <code>UInt16</code>; otherwise, it is a
-            <code>UInt8</code>. This bit must be set for all HFS+
-            B-trees.</dd>
+            <dd>如果此位设置，<code>keyLength</code>是
+            <code>UInt16</code>；否则是 <code>UInt8</code>。
+            所有HFS+的B-trees都要设置此位。</dd>
             
             <dt><code>kBTVariableIndexKeysMask</code></dt>
             
-            <dd>If this bit is set, the keys in index nodes occupy
-            the number of bytes indicated by their
-            <code>keyLength</code> field; otherwise, the keys in
-            index nodes always occupy <code>maxKeyLength</code>
-            bytes. This bit must be set for the HFS+ Catalog
-            B-tree, and cleared for the HFS+ Extents B-tree.</dd>
+            <dd>如果此位设置，index中的key占用 <code>keyLength</code>
+               指定的大小；否则key占用 <code>maxKeyLength</code>。
+               HFS+ Catalog的B-tree必须设置此值，而Extents B-tree必须清除此值。</dd>
          </dl>
          
-         <p>Bits not specified here must be treated as
-         <a href="#ReservedAndPadFields">保留</a>.</p>
+         <p>未讨论的字节用于<a href="#ReservedAndPadFields">保留</a>。</p>
          
 		<h4><a name="UserDataRecord"></a>User Data Record</h4>
          
-		<p>header node的每二个record总是128字节。</p>
+		<p>header node的第二个record总是128字节。</p>
 		
-		<p>在HFS+的 <a href="#CatalogFile">catalog</a>, <a href="#ExtentsOverflowFile">extents</a>, 和 <a href="#AttributesFile">attributes</a> B-trees, 此位置用于 <a href="#ReservedAndPadFields">保留</a>. 而 <a href="#HotFile">hot file</a> B-tree, 该域包含了一些有关hot file的信息.</p>
+		<p>在HFS+的 <a href="#CatalogFile">catalog</a>, <a href="#ExtentsOverflowFile">extents</a>, 和 <a href="#AttributesFile">attributes</a> 文件的B-trees, 此位置用于 <a href="#ReservedAndPadFields">保留</a>. 而 <a href="#HotFile">hot file</a> B-tree, 该域包含了一些有关hot file的信息.</p>
          
          <h4>Map Record</h4>
          
@@ -2071,19 +2034,17 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          它每一位的表示与 <a href="#AllocationFile">allocation file</a>
          相同。</p>
          
-         <p>除去node descriptor, header record, reserved
-         record, 和 record offsets，共计有<code>nodeSize</code> - 256
-         字节可供 map 使用。如果不能满足，map nodes 会选择储存在 additional
-         allocation data.</p>
+         <p>除去node descriptor，header record，reserved
+         record和record offsets，共计有<code>nodeSize</code> - 256
+         字节可供 map 使用。如果不能满足，map nodes 会选择储存在附加的allocation data。</p>
          
          <h3>Map Nodes</h3>
          
-         <p>如果map nodes 使用了 additional allocation data，
+         <p>如果map nodes使用了附加的allocation data，
          header descriptor 的 <code>fLink</code> 会指示下一个node的位置。</p>
          
          <p>每个map node都只包含 node descriptor 和一个map record。
-         这些map record是header　node的map record的后继。它们的大小是
-         nodeSize减去node　descriptor (14 bytes), 再减去２个offsets (4
+         map record的大小是nodeSize减去node　descriptor (14 bytes), 再减去2个offsets (4
 		　bytes), 再减去２字节的空闲空间。所以，map　record的大小等于nodeSize
         减去20 bytes；这样它的大小就可以是４字节对齐。注意，record的起始不是４字节对齐
         的（14字节）。</p>
@@ -2096,9 +2057,8 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  Not using the <code>bLink</code> field is
-                  consistent with the HFS volume format, but not
-                  really consistent with the overall design.</p>
+                  不使用 <code>bLink</code> 字段并不与HFS相矛盾,
+                  但是不是所有的设计都如此.</p>
          </td></tr></tbody></table></center>
          
          <h3><a name="KeyedRecords"></a>Keyed Records</h3>
@@ -2121,7 +2081,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
           的attribute中的<code>kBTVariableIndexKeysMask</code>决定。如果此位没有设置，那么
           它就由<code>maxKeyLength</code> 决定。如果设置了，则是由 <code>keyLength</code>。 </p>
          
-         <p>key后面的则是 record's data。data的格式也取决于 node type，
+         <p>key后面的则是record数据。data的格式取决于node type，
          下两节将会介绍。data总是2字节对齐的，所以，如果<code>keyLength</code>
          加上key的大小为奇数，则必须插入一个padding位。</p>
          
@@ -2135,21 +2095,19 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  A root node does not need to exist (if the tree is
-                  empty). And even if one does exist, it need not
-                  be an index node (i.e., it could be a leaf node
-                  if all the records fit in a single node).</p>
+                  根node可以没有(如果树是空的)。甚至只有一个node，则index node都可以不需要.
+                  </p>
          </td></tr></tbody></table></center>
          
          <h3>叶节点</h3>
          
-         <p>B-tree的最下面称之为 <b>leaf nodes</b>，它没有pointer records,
+         <p>B-tree的最下面称之为 <b>leaf nodes</b>，它没有pointer records，
          取而代之是 <b>data records</b> 。data records 同样包含一个 <code>keyLength</code>, 
          一个key, 和与此key关联的数据。data的长度不固定。</p>
          
-         <p>在HFS+的B-tree中，在data rcecord中的数据就是HFS+保存文件的结构，比如
-         <code>CatalogRecord</code>, <code>ExtentRecord</code>, 或
-         <code>AttributeRecord</code>) 。</p>
+         <p>在HFS+的B-tree中，data rcecord中的数据就是HFS+保存文件的结构，比如
+         <code>CatalogRecord</code>, <code>ExtentRecord</code> 或
+         <code>AttributeRecord</code> 。</p>
          
          <h3><a name="SearchingForKeyedRecords"></a>搜索特定的key</h3>
          
@@ -2160,8 +2118,8 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
             <li>每个node中的Keyed records必须按升序排列。</li>
             
             <li>每一级 (高度相同) 的node都是由 <code>fLink</code> 和 <code>bLink</code>
-            串联着。node里包含了最小的key的node必须出现在链首，即 <code>bLink</code> 
-            为空。反之则最后， <code>fLink</code> 为空。</li>
+            串联着。node里包含最小的key的node必须出现在链首，即 <code>bLink</code> 
+            为空。反之则最后，<code>fLink</code> 为空。</li>
             
             <li>对任一一个node，它里面包含的所有key都比一下个node
             (<code>fLink</code> 指向的)的小，比上一个node(<code>bLink</code> 指向)的大。</li>
@@ -2179,7 +2137,7 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
          
          
          
-         <center><img src="tn1150_004.gif" width="361" height="182" align="bottom" alt="1150.4.gif"><p><b>Figure 4</b>. A sample B-Tree</p></center>
+         <center><img src="tn1150_004.gif" width="361" height="182" align="bottom" alt="1150.4.gif"><p><b>图 4</b>。一个简单的B-Tree</p></center>
          
          <h3>HFS 和 HFS+ B-Trees 比较</h3>
          
@@ -2197,30 +2155,27 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>提示:</b><br>                  
-                  The header node is always located at the start of
-                  the B-tree, so you can find it without knowing the
-                  B-tree node size.</p>
+                  header node总是位于B-Tree的起始，所以你可以在不知道node size的前提下访问到。
+                  </p>
          </td></tr></tbody></table></center>
          
          <p>HFS+ 使用下面默认的node大小：</p>
          
          <ul>
-            <li>4 KB (8KB in Mac OS X) for the catalog file</li>
-            <li>1 KB (4KB in Mac OS X) for the extents overflow file</li>
-            <li>4 KB for the attributes file</li>
+            <li>4 KB (8KB in Mac OS X) 用于 catalog file</li>
+            <li>1 KB (4KB in Mac OS X) 用于 extents overflow file</li>
+            <li>4 KB 用于 attributes file</li>
          </ul>
          
-         <p>These sizes are set when the volume is initialized and
-         cannot be easily changed. It is legal to initialize an HFS+ volume with different node sizes, but the node sizes
-         must be large enough for an index node to contain two keys
-         of maximum size (plus the other overhead such as a node
-         descriptor, record offsets, and pointers to children).</p>
+         <p>这些大小在卷初始化时就设置好了，且一般不能发变。
+            设置其它值也是允许的，但前提要保证有足够的空间容纳2个keys（包括其它如node
+         descriptor，record offsets，pointers等）。</p>
          
         <center><table border="0" width="550">
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>重要:</b><br>
                   
-                  The node size of the catalog file must be at least
+                  catalog file的node size必须至少等于
                   <code>kHFSPlusCatalogMinNodeSize</code> (4096).</p>
          </td></tr></tbody></table></center>
                   
@@ -2228,28 +2183,20 @@ typedef struct BTHeaderRec BTHeaderRec;</pre>
 <tbody><tr><td bgcolor="#E6E6E6">
 <p><b>重要:</b><br>
                   
-                  The node size of the attributes file must be at
+                  attributes file的node size必须至少等于
                   least <code>kHFSPlusAttrMinNodeSize</code> (4096).</p>
          </td></tr></tbody></table></center>
          
          <h4>索引节点中的key size</h4>
          
-         <p>In an HFS B-tree, all of the keys in an index node occupy
-         a fixed amount of space: the maximum key length for that
-         B-tree. This simplifies the algorithms for inserting and
-         deleting records because, within an index node, one key can
-         be replaced by another key without worrying whether there is
-         adequate room for the new key. However, it is also somewhat
-         wasteful when the keys are variable length (such as in the
-         catalog file, where the key length varies with the length of
-         the file name).</p>
+         <p>在HFS的B-tree，所有的index keys都占用固定大小：最大key length。
+         这简化了插入和删除record算法，因为对于一个index node，一个key可以覆盖另一个key而不用担心溢出。
+         当然如果key的长度是变长，会浪费一些空间（比如catalog file，key的长度与文件名相关）。
+         </p>
          
-         <p>In an HFS+ B-tree, the keys in an index node are
-         allowed to vary in size. This complicates the algorithms for
-         inserting and deleting records, but reduces wasted space
-         when the length of a key can vary (such as in the catalog
-         file). It also means that the number of keys in an index
-         node will vary with the actual size of the keys.</p><br>
+         <p>的HFS+的B-tree，index node允许key变长（不同元文件）。对于算法稍微有些复杂，
+         但相应节约了空间。
+         </p><br>
 
 <p><a href="#top">返回顶部</a></p>
 
